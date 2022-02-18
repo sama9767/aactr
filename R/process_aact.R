@@ -5,14 +5,14 @@
 #' AACT documentation available in the [database schema](https://aact.ctti-clinicaltrials.org/schema) and [data dictionary](https://aact.ctti-clinicaltrials.org/data_dictionary).
 
 #' @param dir_in Character. Directory from which to get raw .csv files. Defaults to working directory with `here::here("raw")`.
-#' #' @param dir_out Character. Directory in which to save processed .rds files. Defaults to working directory with `here::here("processed")`.
+#' @param dir_out Character. Directory in which to save processed .rds files. Defaults to working directory with `here::here("processed")`.
 #' @param overwrite Logical. If all valid output tables already processed, should they be overwritten? Defaults to `FALSE`. Note that if *any* table is not processed, *all* tables will be processed. Since this checks that *all* valid output tables are processed, if *all* valid input tables aren't included in \code{dir_in}, *all* available raw tables will be re-processed each time.
 #'
 #' @return NULL
 #'
 #' @export
 #'
-#' @example
+#' @examples
 #' \dontrun{
 #' process_aact(dir_in = here::here("data", "TEST", "raw"),
 #'              dir_out = here::here("data", "TEST", "processed"))

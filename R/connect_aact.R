@@ -11,7 +11,7 @@
 #' @param user Character. AACT username.
 #' @param password Character. Default is NULL. If not provided, password will be searched for in \code{keyring} under the \code{aact} service with the provided \code{username}. If no password found, user will be interactively asked and input will be stored in keyring.
 #'
-#' @return <PostgreSQLConnection> object from \code{dbConnect}
+#' @return \<PostgreSQLConnection\> object from \code{dbConnect}
 #'
 
 connect_aact <- function(user, password = NULL) {
