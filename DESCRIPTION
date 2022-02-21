@@ -32,3 +32,5 @@ Imports:
     utils
 Remotes: 
     github::maia-sh/ctregistries
+URL: https://github.com/maia-sh/aactr
+BugReports: https://github.com/maia-sh/aactr/issues
