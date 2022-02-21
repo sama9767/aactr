@@ -22,7 +22,8 @@ connect_aact <- function(user, password = NULL) {
       keyring::key_set("aact", user)
     )
 
-  drv <- DBI::dbDriver('PostgreSQL')
+  # drv <- DBI::dbDriver('PostgreSQL')
+  drv <- RPostgreSQL::PostgreSQL()
   con <- RPostgreSQL::dbConnect(drv,
                                 dbname = "aact",
                                 host = "aact-db.ctti-clinicaltrials.org",
