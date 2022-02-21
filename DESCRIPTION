@@ -18,6 +18,7 @@ Imports:
     fs,
     glue,
     here,
+    janitor,
     keyring,
     loggit,
     lubridate,
@@ -27,6 +28,7 @@ Imports:
     rlang,
     RPostgreSQL,
     stringr,
+    tidyr,
     utils
 Remotes: 
     github::maia-sh/ctregistries
