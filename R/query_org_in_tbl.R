@@ -14,15 +14,13 @@
 query_org_in_tbl <- function(org, table, columns, con, ignore_case = TRUE){
   query <-
     dplyr::tbl(con, table) %>%
-    # dplyr::filter(nct_id %in% ct_trns) %>%
     dplyr::select(nct_id, dplyr::all_of(columns)) %>%
 
     # Limit "sponsors" to "lead"
     {if (table == "sponsors") dplyr::filter(., lead_or_collaborator == "lead") else .} %>%
 
     dplyr::filter(dplyr::if_any(dplyr::everything(), ~stringr::str_detect(., "(?i)stanford"))) #%>%  #this works, but need to specify miami, i.e., can't use variable
-  # dplyr::filter(dplyr::if_any(dplyr::everything(), ~stringr::str_detect(., organization_regex))) %>% # I would like to use this
-  # dplyr::distinct(nct_id)
+  # dplyr::filter(dplyr::if_any(dplyr::everything(), ~stringr::str_detect(., org))) %>% # TODO
 
   # dplyr::show_query(query)
 
