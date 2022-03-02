@@ -19,7 +19,7 @@ query_org_in_tbl <- function(org, table, columns, con, ignore_case = TRUE){
     # Limit "sponsors" to "lead"
     {if (table == "sponsors") dplyr::filter(., lead_or_collaborator == "lead") else .} %>%
 
-    dplyr::filter(dplyr::if_any(dplyr::everything(), ~stringr::str_detect(., "(?i)stanford"))) #%>%  #this works, but need to specify miami, i.e., can't use variable
+    dplyr::filter(dplyr::if_any(dplyr::everything(), ~stringr::str_detect(., "(?i)ucsf|University of California San Francisco"))) #%>%  #this works, but need to specify miami, i.e., can't use variable
   # dplyr::filter(dplyr::if_any(dplyr::everything(), ~stringr::str_detect(., org))) %>% # TODO
 
   # dplyr::show_query(query)
