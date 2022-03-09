@@ -7,7 +7,7 @@
 query_org_in_tbl(org, table, columns, con, ignore_case = TRUE)
 }
 \arguments{
-\item{org}{Character. Regular expression for organization.}
+\item{org}{Character. Regular expression for organization. By default, case agnostic, controlled by \code{ignore_case}.}
 
 \item{table}{Character. AACT table.}
 
