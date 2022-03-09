@@ -23,8 +23,9 @@ query_org_in_tbl <- function(org, table, columns, con, ignore_case = TRUE){
     # Limit "sponsors" to "lead"
     {if (table == "sponsors") dplyr::filter(., lead_or_collaborator == "lead") else .} %>%
 
+    # Thank you @bgcarlisle for help with curly-curly!
     dplyr::filter(dplyr::if_any(dplyr::everything(), ~stringr::str_detect(., {{org}})))
-  browser()
+
   # dplyr::show_query(query)
 
   out <- dplyr::collect(query)
