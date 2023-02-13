@@ -148,11 +148,10 @@ process_aact <- function(dir_in = here::here("raw"),
             stringr::str_detect(study_type, "Observational"),
             "Observational", study_type
           )
-      ) %>%
+      )
 
-      dplyr::rename(title = brief_title) %>%
 
-      dplyr::select(-official_title)
+
   }
 
   if (all(c("designs", "centers", "sponsors") %in% raw_tables)){
