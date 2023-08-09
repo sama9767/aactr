@@ -58,7 +58,7 @@ get_org_trials <- function(org,
     # Some trials have unspecified officials
     dplyr::mutate(role = tidyr::replace_na(role, "unspecified_official")) %>%
 
-    tidyr::pivot_wider(nct_id, names_from = role, values_from = affiliation) %>%
+    tidyr::pivot_wider(id_cols = nct_id, names_from = role, values_from = affiliation) %>%
 
     janitor::clean_names()
 
@@ -72,7 +72,7 @@ get_org_trials <- function(org,
     dplyr::mutate(affiliation = dplyr::coalesce(affiliation, organization), .keep = "unused") %>%
     dplyr::rename(responsible_party = affiliation) %>%
     dplyr::select(-table)
-  # tidyr::pivot_wider(nct_id, names_from = table, values_from = affiliation)
+  # tidyr::pivot_wider(id_cols = nct_id, names_from = table, values_from = affiliation)
 
   # Disconnect aact database
   RPostgreSQL::dbDisconnect(con)
