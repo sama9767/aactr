@@ -7,13 +7,16 @@
 process_aact(
   dir_in = here::here("raw"),
   dir_out = here::here("processed"),
+  ext_out = "rds",
   overwrite = FALSE
 )
 }
 \arguments{
 \item{dir_in}{Character. Directory from which to get raw .csv files. Defaults to working directory with \code{here::here("raw")}.}
 
-\item{dir_out}{Character. Directory in which to save processed .rds files. Defaults to working directory with \code{here::here("processed")}.}
+\item{dir_out}{Character. Directory in which to save processed files. Defaults to working directory with \code{here::here("processed")}.}
+
+\item{ext_out}{Character. Extension for processed files. "rds" (default) or "csv".}
 
 \item{overwrite}{Logical. If all valid output tables already processed, should they be overwritten? Defaults to \code{FALSE}. Note that if \emph{any} table is not processed, \emph{all} tables will be processed. Since this checks that \emph{all} valid output tables are processed, if \emph{all} valid input tables aren't included in \code{dir_in}, \emph{all} available raw tables will be re-processed each time.}
 }
@@ -25,7 +28,7 @@ AACT documentation available in the \href{https://aact.ctti-clinicaltrials.org/s
 }
 \examples{
 \dontrun{
-process_aact(dir_in = here::here("data", "TEST", "raw"),
-             dir_out = here::here("data", "TEST", "processed"))
+process_aact(dir_in = here::here("data", "raw"),
+             dir_out = here::here("data", "processed"))
 }
 }

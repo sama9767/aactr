@@ -5,7 +5,8 @@
 #' AACT documentation available in the [database schema](https://aact.ctti-clinicaltrials.org/schema) and [data dictionary](https://aact.ctti-clinicaltrials.org/data_dictionary).
 
 #' @param dir_in Character. Directory from which to get raw .csv files. Defaults to working directory with `here::here("raw")`.
-#' @param dir_out Character. Directory in which to save processed .rds files. Defaults to working directory with `here::here("processed")`.
+#' @param dir_out Character. Directory in which to save processed files. Defaults to working directory with `here::here("processed")`.
+#' @param ext_out Character. Extension for processed files. "rds" (default) or "csv".
 #' @param overwrite Logical. If all valid output tables already processed, should they be overwritten? Defaults to `FALSE`. Note that if *any* table is not processed, *all* tables will be processed. Since this checks that *all* valid output tables are processed, if *all* valid input tables aren't included in \code{dir_in}, *all* available raw tables will be re-processed each time.
 #'
 #' @return NULL
@@ -14,19 +15,23 @@
 #'
 #' @examples
 #' \dontrun{
-#' process_aact(dir_in = here::here("data", "TEST", "raw"),
-#'              dir_out = here::here("data", "TEST", "processed"))
+#' process_aact(dir_in = here::here("data", "raw"),
+#'              dir_out = here::here("data", "processed"))
 #'}
 
 
 
 process_aact <- function(dir_in = here::here("raw"),
                          dir_out = here::here("processed"),
+                         ext_out = "rds",
                          # tables = NULL, # could add param to chose tables
                          overwrite = FALSE){
 
   # Create output directory if doesn't exist
   fs::dir_create(dir_out)
+
+  # Output extension must be "rds" or "csv
+  stopifnot(ext_out %in% c("rds", "csv"))
 
   # Processing prepared for certain tables
   valid_in_tables <- c("studies", "designs", "interventions", "references", "ids", "centers", "officials", "responsible-parties", "sponsors", "facilities", "central-contacts", "facility-contacts", "result-contacts")
@@ -97,7 +102,10 @@ process_aact <- function(dir_in = here::here("raw"),
       dplyr::select(nct_id, affiliation_type, lead_affiliation = affiliation) %>%
       dplyr::arrange(nct_id)
 
-    readr::write_rds(affiliations, fs::path(dir_out, "ctgov-lead-affiliations", ext = "rds"))
+    if (ext_out == "csv"){
+
+    } else {}
+    write_rds_csv(affiliations, fs::path(dir_out, "ctgov-lead-affiliations", ext = ext_out))
 
   }
 
@@ -106,7 +114,7 @@ process_aact <- function(dir_in = here::here("raw"),
       readr::read_csv(fs::path(dir_in, "facilities", ext = "csv")) %>%
       dplyr::rename(facility_affiliation = name)
 
-    readr::write_rds(facilities, fs::path(dir_out, "ctgov-facility-affiliations", ext = "rds"))
+    write_rds_csv(facilities, fs::path(dir_out, "ctgov-facility-affiliations", ext = ext_out))
 
   }
 
@@ -178,7 +186,7 @@ process_aact <- function(dir_in = here::here("raw"),
 
   }
 
-  readr::write_rds(studies, fs::path(dir_out, "ctgov-studies", ext = "rds"))
+  write_rds_csv(studies, fs::path(dir_out, "ctgov-studies", ext = ext_out))
 
   # Process interventions ---------------------------------------------------
 
@@ -213,14 +221,14 @@ process_aact <- function(dir_in = here::here("raw"),
         trn = purrr::map_chr(raw_trn, ctregistries::clean_trn)
       )
 
-    readr::write_rds(ids, fs::path(dir_out, "ctgov-ids", ext = "rds"))
+    write_rds_csv(ids, fs::path(dir_out, "ctgov-ids", ext = ext_out))
 
     crossreg <-
       ids %>%
       dplyr::filter(!is.na(trn)) %>%
       dplyr::select(nct_id, crossreg_registry = registry, crossreg_trn = trn)
 
-    readr::write_rds(crossreg, fs::path(dir_out, "ctgov-crossreg", ext = "rds"))
+    write_rds_csv(crossreg, fs::path(dir_out, "ctgov-crossreg", ext = ext_out))
   }
 
   # Process references ------------------------------------------------------
@@ -240,7 +248,7 @@ process_aact <- function(dir_in = here::here("raw"),
       # Some references are automatically derived in ct.gov
       dplyr::mutate(reference_derived = dplyr::if_else(reference_type == "derived", TRUE, FALSE))
 
-    readr::write_rds(references, fs::path(dir_out, "ctgov-references", ext = "rds"))
+    write_rds_csv(references, fs::path(dir_out, "ctgov-references", ext = ext_out))
   }
 
   # Process contacts --------------------------------------------------------
@@ -266,6 +274,6 @@ process_aact <- function(dir_in = here::here("raw"),
       dplyr::distinct() %>%
       dplyr::arrange(nct_id)
 
-    readr::write_rds(contacts, fs::path(dir_out, "ctgov-contacts", ext = "rds"))
+    write_rds_csv(contacts, fs::path(dir_out, "ctgov-contacts", ext = ext_out))
   }
 }

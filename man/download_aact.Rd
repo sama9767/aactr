@@ -38,7 +38,7 @@ AACT documentation available in the \href{https://aact.ctti-clinicaltrials.org/s
 \examples{
 \dontrun{
 download_aact(ids = c("NCT00868166", "NCT00869726"),
-              dir = here::here("data", "TEST", "raw"),
+              dir = here::here("data", "raw"),
               user = "respmetrics")
 }
 }
