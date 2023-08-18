@@ -1,7 +1,7 @@
 #' Write a data frame to RDS or CSV
 #'
 #' @param x A data frame or tibble to write to disk.
-#' @param filepath File to write to, with extension.
+#' @param file Filepath to write to, with extension.
 #'
 #' @return NULL
 #'

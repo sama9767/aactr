@@ -9,7 +9,7 @@ write_rds_csv(x, file)
 \arguments{
 \item{x}{A data frame or tibble to write to disk.}
 
-\item{filepath}{File to write to, with extension.}
+\item{file}{Filepath to write to, with extension.}
 }
 \description{
 Write a data frame to RDS or CSV
