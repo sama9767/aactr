@@ -129,7 +129,8 @@ download_aact <- function(ids,
     query_aact(
       "id_information", ids,
       con, filepath = fs::path(dir, "ids", ext = "csv"),
-      id_type, id_value
+      # id_source, id_type_description, id_link missing from aact data schema
+      id_source, id_value, id_type, id_type_description, id_link
     )
   }
 
