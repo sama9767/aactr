@@ -13,7 +13,6 @@ RoxygenNote: 7.2.3
 Imports: 
     assertr,
     ctregistries (>= 0.1.0),
-    DBI,
     dplyr,
     fs,
     glue,
@@ -28,8 +27,7 @@ Imports:
     rlang,
     RPostgreSQL,
     stringr,
-    tidyr,
-    utils
+    tidyr
 Remotes: 
     github::maia-sh/ctregistries
 URL: https://github.com/maia-sh/aactr
