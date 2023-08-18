@@ -35,42 +35,42 @@ get_org_trials <- function(org,
   sponsors <-
     query_org_in_tbl(org, "sponsors", columns = c("lead_or_collaborator", "name"),
                      con = con,
-                     ignore_case = ignore_case) %>%
+                     ignore_case = ignore_case) |>
 
     # Trials are limited to lead sponsor
-    dplyr::rename(lead_sponsor = "name") %>%
+    dplyr::rename(lead_sponsor = "name") |>
     dplyr::select("nct_id", "lead_sponsor")
 
   officials <-
     query_org_in_tbl(org, "overall_officials", columns = c("affiliation", "role"),
                      con = con,
-                     ignore_case = ignore_case) %>%
+                     ignore_case = ignore_case) |>
 
     # Some trials have multiple officials of same type and affiliation, so remove duplicates
-    dplyr::distinct() %>%
+    dplyr::distinct() |>
 
     # Some trials have multiple officials of same type and different affiliation, so collapse and distinct again
-    dplyr::group_by(.data$nct_id, .data$role) %>%
-    dplyr::mutate(affiliation = stringr::str_c(.data$affiliation, collapse = "; ")) %>%
-    dplyr::ungroup() %>%
-    dplyr::distinct() %>%
+    dplyr::group_by(.data$nct_id, .data$role) |>
+    dplyr::mutate(affiliation = stringr::str_c(.data$affiliation, collapse = "; ")) |>
+    dplyr::ungroup() |>
+    dplyr::distinct() |>
 
     # Some trials have unspecified officials
-    dplyr::mutate(role = tidyr::replace_na(.data$role, "unspecified_official")) %>%
+    dplyr::mutate(role = tidyr::replace_na(.data$role, "unspecified_official")) |>
 
-    tidyr::pivot_wider(id_cols = .data$nct_id, names_from = .data$role, values_from = .data$affiliation) %>%
+    tidyr::pivot_wider(id_cols = .data$nct_id, names_from = .data$role, values_from = .data$affiliation) |>
 
     janitor::clean_names()
 
   responsible_parties <-
     query_org_in_tbl(org, "responsible_parties", columns = c("affiliation", "organization"),
                      con = con,
-                     ignore_case = ignore_case) %>%
+                     ignore_case = ignore_case) |>
 
     # Check that each study has only affiliation OR organization, and then merge and rename to responsible party
-    assertr::assert_rows(assertr::num_row_NAs, assertr::in_set(1), c("affiliation", "organization")) %>%
-    dplyr::mutate(affiliation = dplyr::coalesce(.data$affiliation, .data$organization), .keep = "unused") %>%
-    dplyr::rename(responsible_party = "affiliation") %>%
+    assertr::assert_rows(assertr::num_row_NAs, assertr::in_set(1), c("affiliation", "organization")) |>
+    dplyr::mutate(affiliation = dplyr::coalesce(.data$affiliation, .data$organization), .keep = "unused") |>
+    dplyr::rename(responsible_party = "affiliation") |>
     dplyr::select(-"table")
   # tidyr::pivot_wider(id_cols = nct_id, names_from = table, values_from = affiliation)
 
@@ -81,7 +81,7 @@ get_org_trials <- function(org,
   loggit::loggit("INFO", query)
 
   org_trials <-
-    dplyr::full_join(sponsors, officials, by = "nct_id") %>%
+    dplyr::full_join(sponsors, officials, by = "nct_id") |>
     dplyr::full_join(responsible_parties, by = "nct_id")
 
   org_trials
@@ -91,13 +91,13 @@ get_org_trials <- function(org,
 #
 # # Some trials have organization email but not affiliation
 # result_contacts_email_only <-
-#   query_org_in_tbl("result_contacts", columns = c("organization", "email")) %>%
+#   query_org_in_tbl("result_contacts", columns = c("organization", "email")) |>
 #   filter(stringr::str_detect(organization, "(?i)stanford", negate = TRUE))
 #
 # # Limit results contacts based on organization (not email)
 # result_contacts <-
-#   query_org_in_tbl("result_contacts", columns = "organization", con) %>%
-#   rename(results_contact = organization) %>%
+#   query_org_in_tbl("result_contacts", columns = "organization", con) |>
+#   rename(results_contact = organization) |>
 #   select(-table)
 #
 # # There are also central contacts, but individual not organization

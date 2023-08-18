@@ -39,16 +39,16 @@ process_aact <- function(dir_in = here::here("raw"),
 
   # If all tables already processed and not overwriting, then inform user and return
   raw_tables <-
-    fs::dir_ls(dir_in) %>%
-    fs::path_file() %>%
-    fs::path_ext_remove() %>%
+    fs::dir_ls(dir_in) |>
+    fs::path_file() |>
+    fs::path_ext_remove() |>
 
     # Limit to valid tables in case of additional files
     intersect(valid_in_tables)
 
   processed_tables <-
-    fs::dir_ls(dir_out) %>%
-    fs::path_file() %>%
+    fs::dir_ls(dir_out) |>
+    fs::path_file() |>
     fs::path_ext_remove()
 
   if (all(valid_out_tables %in% processed_tables) & !overwrite){
@@ -68,38 +68,38 @@ process_aact <- function(dir_in = here::here("raw"),
   # Check that all three lead affiliation tables available
   if (all(c("responsible-parties", "officials", "sponsors") %in% raw_tables)){
     resp_parties <-
-      readr::read_csv(fs::path(dir_in, "responsible-parties", ext = "csv")) %>%
-      dplyr::filter(!is.na(.data$affiliation) | !is.na(.data$organization)) %>%
+      readr::read_csv(fs::path(dir_in, "responsible-parties", ext = "csv")) |>
+      dplyr::filter(!is.na(.data$affiliation) | !is.na(.data$organization)) |>
 
       # Check that each study has only affiliation OR organization, and then merge
-      assertr::assert_rows(assertr::num_row_NAs, assertr::in_set(1), c("affiliation", "organization")) %>%
+      assertr::assert_rows(assertr::num_row_NAs, assertr::in_set(1), c("affiliation", "organization")) |>
 
-      dplyr::mutate(affiliation = dplyr::coalesce(.data$affiliation, .data$organization), .keep = "unused") %>%
-      dplyr::distinct() %>%
+      dplyr::mutate(affiliation = dplyr::coalesce(.data$affiliation, .data$organization), .keep = "unused") |>
+      dplyr::distinct() |>
       dplyr::mutate(affiliation_type = "Responsible Party")
 
     officials <-
-      readr::read_csv(fs::path(dir_in, "officials", ext = "csv")) %>%
-      dplyr::distinct() %>%
-      dplyr::filter(!is.na(.data$affiliation)) %>%
+      readr::read_csv(fs::path(dir_in, "officials", ext = "csv")) |>
+      dplyr::distinct() |>
+      dplyr::filter(!is.na(.data$affiliation)) |>
       dplyr::mutate(affiliation_type = "Study Official")
 
     sponsors <-
-      readr::read_csv(fs::path(dir_in, "sponsors", ext = "csv")) %>%
-      dplyr::filter(.data$lead_or_collaborator == "lead") %>%
-      dplyr::select(-"lead_or_collaborator") %>%
+      readr::read_csv(fs::path(dir_in, "sponsors", ext = "csv")) |>
+      dplyr::filter(.data$lead_or_collaborator == "lead") |>
+      dplyr::select(-"lead_or_collaborator") |>
 
       dplyr::rename(
         main_sponsor = "agency_class",
         affiliation = "name"
-      ) %>%
-      assertr::assert(assertr::is_uniq, "nct_id") %>%
+      ) |>
+      assertr::assert(assertr::is_uniq, "nct_id") |>
       dplyr::mutate(affiliation_type = "Sponsor")
 
     affiliations <-
-      dplyr::bind_rows(sponsors, resp_parties, officials) %>%
-      dplyr::distinct() %>%
-      dplyr::select("nct_id", "affiliation_type", lead_affiliation = "affiliation") %>%
+      dplyr::bind_rows(sponsors, resp_parties, officials) |>
+      dplyr::distinct() |>
+      dplyr::select("nct_id", "affiliation_type", lead_affiliation = "affiliation") |>
       dplyr::arrange("nct_id")
 
     if (ext_out == "csv"){
@@ -111,7 +111,7 @@ process_aact <- function(dir_in = here::here("raw"),
 
   if ("facilities" %in% raw_tables){
     facilities <-
-      readr::read_csv(fs::path(dir_in, "facilities", ext = "csv")) %>%
+      readr::read_csv(fs::path(dir_in, "facilities", ext = "csv")) |>
       dplyr::rename(facility_affiliation = "name")
 
     write_rds_csv(facilities, fs::path(dir_out, "ctgov-facility-affiliations", ext = ext_out))
@@ -122,13 +122,13 @@ process_aact <- function(dir_in = here::here("raw"),
 
   if ("studies" %in% raw_tables){
     studies <-
-      readr::read_csv(fs::path(dir_in, "studies", ext = "csv")) %>%
+      readr::read_csv(fs::path(dir_in, "studies", ext = "csv")) |>
 
       dplyr::rename(
         registration_date = "study_first_submitted_date",
         summary_results_date = "results_first_submitted_date",
         recruitment_status = "overall_status"
-      ) %>%
+      ) |>
 
       # Parse dates, which are either Month Year, or Month Day Year
       # If no day, default to 1st, like intovalue
@@ -137,17 +137,17 @@ process_aact <- function(dir_in = here::here("raw"),
         completion_date = lubridate::parse_date_time(.data$completion_month_year, c("my", "mdY")),
         primary_completion_date = lubridate::parse_date_time(.data$primary_completion_month_year, c("my", "mdY")),
         .keep = "unused"
-      ) %>%
+      ) |>
 
       dplyr::mutate(
         has_summary_results = dplyr::if_else(!is.na(.data$summary_results_date), TRUE, FALSE)
-      ) %>%
+      ) |>
       #
       # mutate(
       #   days_reg_to_start = duration_days(registration_date, start_date),
       #   days_reg_to_comp = duration_days(registration_date, completion_date),
       #   days_comp_to_summary = duration_days(completion_date, summary_results_date)
-      # ) %>%
+      # ) |>
 
       dplyr::mutate(
         phase = dplyr::na_if(.data$phase, "N/A"),
@@ -156,9 +156,9 @@ process_aact <- function(dir_in = here::here("raw"),
             stringr::str_detect(.data$study_type, "Observational"),
             "Observational", .data$study_type
           )
-      ) %>%
+      ) |>
 
-      dplyr::rename(title = "brief_title") %>%
+      dplyr::rename(title = "brief_title") |>
 
       dplyr::select(-"official_title")
   }
@@ -170,17 +170,17 @@ process_aact <- function(dir_in = here::here("raw"),
 
     studies <-
 
-      studies %>%
+      studies |>
 
       # Check that designs & centers have no duplicates per study, and add to studies
-      dplyr::left_join(assertr::assert(designs, assertr::is_uniq, "nct_id"), by = "nct_id") %>%
-      dplyr::left_join(assertr::assert(centers, assertr::is_uniq, "nct_id"), by = "nct_id") %>%
-      dplyr::left_join(dplyr::select(sponsors, "nct_id", "main_sponsor"), by = "nct_id") %>%
+      dplyr::left_join(assertr::assert(designs, assertr::is_uniq, "nct_id"), by = "nct_id") |>
+      dplyr::left_join(assertr::assert(centers, assertr::is_uniq, "nct_id"), by = "nct_id") |>
+      dplyr::left_join(dplyr::select(sponsors, "nct_id", "main_sponsor"), by = "nct_id") |>
 
       dplyr::mutate(
         allocation =  dplyr::na_if(.data$allocation, "N/A"),
         is_multicentric = !.data$has_single_facility
-      ) %>%
+      ) |>
 
       dplyr::select(-"has_single_facility", -"number_of_facilities")
 
@@ -196,15 +196,15 @@ process_aact <- function(dir_in = here::here("raw"),
   #
   #   interventions <- readr::read_csv(fs::path(dir_in, "interventions", ext = "csv"))
   #
-  #   interventions %>%
-  #     dplyr::distinct() %>%
-  #     janitor::get_dupes(nct_id) %>%
+  #   interventions |>
+  #     dplyr::distinct() |>
+  #     janitor::get_dupes(nct_id) |>
   #     dplyr::count(dupe_count)
   #
-  #   interventions %>%
-  #     dplyr::distinct() %>%
-  #     dplyr::group_by(nct_id) %>%
-  #     dplyr::mutate(intervention_types = paste(intervention_type, collapse="; ")) %>%
+  #   interventions |>
+  #     dplyr::distinct() |>
+  #     dplyr::group_by(nct_id) |>
+  #     dplyr::mutate(intervention_types = paste(intervention_type, collapse="; ")) |>
   #     dplyr::distinct(nct_id, intervention_types)
   # }
 
@@ -215,12 +215,12 @@ process_aact <- function(dir_in = here::here("raw"),
     id_value <- NULL
 
     ids <-
-      readr::read_csv(fs::path(dir_in, "ids", ext = "csv")) %>%
+      readr::read_csv(fs::path(dir_in, "ids", ext = "csv")) |>
 
-      ctregistries::mutate_trn_registry(id_value) %>%
+      ctregistries::mutate_trn_registry(id_value) |>
 
       # Clean trns and collapse EudraCT entries
-      dplyr::rename(raw_trn = "trn") %>%
+      dplyr::rename(raw_trn = "trn") |>
       dplyr::mutate(
         trn = purrr::map_chr(.data$raw_trn, ctregistries::clean_trn)
       )
@@ -228,8 +228,8 @@ process_aact <- function(dir_in = here::here("raw"),
     write_rds_csv(ids, fs::path(dir_out, "ctgov-ids", ext = ext_out))
 
     crossreg <-
-      ids %>%
-      dplyr::filter(!is.na(.data$trn)) %>%
+      ids |>
+      dplyr::filter(!is.na(.data$trn)) |>
       dplyr::select("nct_id", crossreg_registry = "registry", crossreg_trn = "trn")
 
     write_rds_csv(crossreg, fs::path(dir_out, "ctgov-crossreg", ext = ext_out))
@@ -239,7 +239,7 @@ process_aact <- function(dir_in = here::here("raw"),
 
   if ("references" %in% raw_tables){
     references <-
-      readr::read_csv(fs::path(dir_in, "references", ext = "csv")) %>%
+      readr::read_csv(fs::path(dir_in, "references", ext = "csv")) |>
 
       # Extract identifiers
       dplyr::mutate(
@@ -247,7 +247,7 @@ process_aact <- function(dir_in = here::here("raw"),
         doi = stringr::str_extract(.data$citation, "10\\.\\d{4,9}/[-.;()/:\\w\\d]+"),
         doi = stringr::str_remove(.data$doi, "\\.$"), # remove trailing period
         pmcid = stringr::str_extract(.data$citation, "PMC[0-9]{7}")
-      ) %>%
+      ) |>
 
       # Some references are automatically derived in ct.gov
       dplyr::mutate(reference_derived = dplyr::if_else(.data$reference_type == "derived", TRUE, FALSE))
@@ -259,23 +259,23 @@ process_aact <- function(dir_in = here::here("raw"),
 
   if (all(c("central-contacts", "facility-contacts", "result-contacts") %in% raw_tables)){
     central_contacts <-
-      readr::read_csv(fs::path(dir_in, "central-contacts", ext = "csv")) %>%
-      dplyr::distinct() %>%
+      readr::read_csv(fs::path(dir_in, "central-contacts", ext = "csv")) |>
+      dplyr::distinct() |>
       dplyr::mutate(contact_type = stringr::str_c("central_", .data$contact_type))
 
     facility_contacts <-
-      readr::read_csv(fs::path(dir_in, "facility-contacts", ext = "csv")) %>%
-      dplyr::distinct() %>%
+      readr::read_csv(fs::path(dir_in, "facility-contacts", ext = "csv")) |>
+      dplyr::distinct() |>
       dplyr::mutate(contact_type = stringr::str_c("facility_", .data$contact_type))
 
     result_contacts <-
-      readr::read_csv(fs::path(dir_in, "result-contacts", ext = "csv")) %>%
-      dplyr::distinct() %>%
+      readr::read_csv(fs::path(dir_in, "result-contacts", ext = "csv")) |>
+      dplyr::distinct() |>
       dplyr::mutate(contact_type = "result")
 
     contacts <-
-      dplyr::bind_rows(central_contacts, facility_contacts, result_contacts) %>%
-      dplyr::distinct() %>%
+      dplyr::bind_rows(central_contacts, facility_contacts, result_contacts) |>
+      dplyr::distinct() |>
       dplyr::arrange(.data$nct_id)
 
     write_rds_csv(contacts, fs::path(dir_out, "ctgov-contacts", ext = ext_out))

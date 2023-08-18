@@ -57,8 +57,8 @@ download_aact <- function(ids,
 
   # If all tables already downloaded and not overwriting, then inform user and return
   downloaded_tables <-
-    fs::dir_ls(dir) %>%
-    fs::path_file() %>%
+    fs::dir_ls(dir)  |>
+    fs::path_file() |>
     fs::path_ext_remove()
 
   if (all(tables %in% downloaded_tables) & !overwrite){
@@ -70,11 +70,11 @@ download_aact <- function(ids,
       logs <- tryCatch(error = function(cnd) NULL, loggit::read_logs(logfile))
 
       if (!rlang::is_null(logs)){
-        logs %>%
-          dplyr::filter(.data$log_msg == query) %>%
-          dplyr::arrange(dplyr::desc(.data$timestamp)) %>%
-          dplyr::slice_head(n = 1) %>%
-          dplyr::pull(.data$timestamp) %>%
+        logs |>
+          dplyr::filter(.data$log_msg == query) |>
+          dplyr::arrange(dplyr::desc(.data$timestamp)) |>
+          dplyr::slice_head(n = 1) |>
+          dplyr::pull(.data$timestamp) |>
           as.Date.character()
       } else {"No previous query"}
     }
