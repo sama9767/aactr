@@ -16,12 +16,15 @@ query_org_in_tbl <- function(org, table, columns, con, ignore_case = TRUE){
     org <- paste0("(?i)", org)
   }
 
+  # Placeholder value to avoid CMD check errors
+  . <- NULL
+
   query <-
     dplyr::tbl(con, table) %>%
-    dplyr::select(nct_id, dplyr::all_of(columns)) %>%
+    dplyr::select("nct_id", dplyr::all_of(columns)) %>%
 
     # Limit "sponsors" to "lead"
-    {if (table == "sponsors") dplyr::filter(., lead_or_collaborator == "lead") else .} %>%
+    {if (table == "sponsors") dplyr::filter(., .data$lead_or_collaborator == "lead") else .} %>%
 
     # Thank you @bgcarlisle for help with curly-curly!
     dplyr::filter(dplyr::if_any(dplyr::everything(), ~stringr::str_detect(., {{org}})))

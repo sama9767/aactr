@@ -15,9 +15,9 @@ query_aact <- function(table, ids, con, filepath = NULL, ...){
 
   query <-
     dplyr::tbl(con, table) %>%
-    dplyr::filter(nct_id %in% ids) %>%
+    dplyr::filter(.data$nct_id %in% ids) %>%
     dplyr::select(
-      nct_id,
+      "nct_id",
       ...
     )
 

@@ -71,10 +71,10 @@ download_aact <- function(ids,
 
       if (!rlang::is_null(logs)){
         logs %>%
-          dplyr::filter(log_msg == query) %>%
-          dplyr::arrange(dplyr::desc(timestamp)) %>%
+          dplyr::filter(.data$log_msg == query) %>%
+          dplyr::arrange(dplyr::desc(.data$timestamp)) %>%
           dplyr::slice_head(n = 1) %>%
-          dplyr::pull(timestamp) %>%
+          dplyr::pull(.data$timestamp) %>%
           as.Date.character()
       } else {"No previous query"}
     }
@@ -93,11 +93,11 @@ download_aact <- function(ids,
     query_aact(
       "studies", ids,
       con, filepath = fs::path(dir, "studies", ext = "csv"),
-      last_update_submitted_date,
-      start_month_year, completion_month_year, primary_completion_month_year,
-      study_first_submitted_date, results_first_submitted_date,
-      study_type, phase, enrollment, overall_status,
-      official_title, brief_title
+      "last_update_submitted_date",
+      "start_month_year", "completion_month_year", "primary_completion_month_year",
+      "study_first_submitted_date", "results_first_submitted_date",
+      "study_type", "phase", "enrollment", "overall_status",
+      "official_title", "brief_title"
     )
   }
 
@@ -105,7 +105,7 @@ download_aact <- function(ids,
     query_aact(
       "designs", ids,
       con, filepath = fs::path(dir, "designs", ext = "csv"),
-      allocation, masking
+      "allocation", "masking"
     )
   }
 
@@ -113,7 +113,7 @@ download_aact <- function(ids,
     query_aact(
       "interventions", ids,
       con, filepath = fs::path(dir, "interventions", ext = "csv"),
-      intervention_type
+      "intervention_type"
     )
   }
 
@@ -121,7 +121,7 @@ download_aact <- function(ids,
     query_aact(
       "study_references", ids,
       con, filepath = fs::path(dir, "references", ext = "csv"),
-      pmid, reference_type, citation
+      "pmid", "reference_type", "citation"
     )
   }
 
@@ -130,7 +130,7 @@ download_aact <- function(ids,
       "id_information", ids,
       con, filepath = fs::path(dir, "ids", ext = "csv"),
       # id_source, id_type_description, id_link missing from aact data schema
-      id_source, id_value, id_type, id_type_description, id_link
+      "id_source", "id_value", "id_type", "id_type_description", "id_link"
     )
   }
 
@@ -138,7 +138,7 @@ download_aact <- function(ids,
     query_aact(
       "calculated_values", ids,
       con, filepath = fs::path(dir, "centers", ext = "csv"),
-      has_single_facility, number_of_facilities
+      "has_single_facility", "number_of_facilities"
     )
   }
 
@@ -146,7 +146,7 @@ download_aact <- function(ids,
     query_aact(
       "overall_officials", ids,
       con, filepath = fs::path(dir, "officials", ext = "csv"),
-      affiliation
+      "affiliation"
     )
   }
 
@@ -154,7 +154,7 @@ download_aact <- function(ids,
     query_aact(
       "responsible_parties", ids,
       con, filepath = fs::path(dir, "responsible-parties", ext = "csv"),
-      affiliation, organization
+      "affiliation", "organization"
     )
   }
 
@@ -162,8 +162,8 @@ download_aact <- function(ids,
     query_aact(
       "sponsors", ids,
       con, filepath = fs::path(dir, "sponsors", ext = "csv"),
-      agency_class, # main_sponsor
-      lead_or_collaborator, name
+      "agency_class", # main_sponsor
+      "lead_or_collaborator", "name"
     )
   }
 
@@ -171,7 +171,7 @@ download_aact <- function(ids,
     query_aact(
       "facilities", ids,
       con, filepath = fs::path(dir, "facilities", ext = "csv"),
-      name, city, country
+      "name", "city", "country"
     )
   }
 
@@ -179,7 +179,7 @@ download_aact <- function(ids,
     query_aact(
       "central_contacts", ids,
       con, filepath = fs::path(dir, "central-contacts", ext = "csv"),
-      contact_type, name, email, phone
+      "contact_type", "name", "email", "phone"
     )
   }
 
@@ -187,7 +187,7 @@ download_aact <- function(ids,
     query_aact(
       "facility_contacts", ids,
       con, filepath = fs::path(dir, "facility-contacts", ext = "csv"),
-      facility_id, contact_type, name, email, phone
+      "facility_id", "contact_type", "name", "email", "phone"
     )
   }
 
@@ -195,7 +195,7 @@ download_aact <- function(ids,
     query_aact(
       "result_contacts", ids,
       con, filepath = fs::path(dir, "result-contacts", ext = "csv"),
-      organization, name, email, phone
+      "organization", "name", "email", "phone"
     )
   }
 
