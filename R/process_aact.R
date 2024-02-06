@@ -158,9 +158,10 @@ process_aact <- function(dir_in = here::here("raw"),
           )
       ) |>
 
-      dplyr::rename(title = "brief_title") |>
+      dplyr::rename(title = "brief_title")
 
-      dplyr::select(-"official_title")
+      # 2024-02-06: keep "official_title"
+      # dplyr::select(-"official_title")
   }
 
   if (all(c("designs", "centers", "sponsors") %in% raw_tables)){
